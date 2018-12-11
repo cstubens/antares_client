@@ -63,7 +63,9 @@ def load_args():
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('topic', type=str,
-                        help='Name of Kafka topic to connect to.')
+                        help='Name of Kafka topic to connect to.'
+                             ' You may supply multiple topic names'
+                             ' separated by commas, without spaces.')
     parser.add_argument('--host', type=str, default=ANTARES_KAFKA_HOST,
                         help='Hostname of Kafka cluster.')
     parser.add_argument('--port', type=int, default=ANTARES_KAFKA_PORT,
@@ -107,7 +109,12 @@ def get_kafka_consumer(args):
         'sasl.password': args.api_secret,
     }
     consumer = confluent_kafka.Consumer(**kafka_config)
-    consumer.subscribe([args.topic])
+    topic = args.topic
+    if ',' in topic:
+        topics = topic.split(',')
+    else:
+        topics = [topic]
+    consumer.subscribe(topics)
     return consumer
 
 
