@@ -21,7 +21,7 @@ python antares_client.py -h
 
 Contact cstubens@noao.edu for credentials.
 
-In `antares_client.py`, set `ANTARES_KAFKA_API_KEY` and `ANTARES_KAFKA_API_SECRET` accordingly.
+In `antares_client.py`, set `ANTARES_KAFKA_API_KEY` and `ANTARES_KAFKA_API_SECRET` accordingly. If you prefer, you may specify these at runtime using `--api_key` and `--api_secret`.
 
 ## Subscribe to a stream
 
