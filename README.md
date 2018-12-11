@@ -5,15 +5,19 @@ A light-weight client for receiving alerts from ANTARES
 
 ANTARES uses Apache Kafka to stream out alerts. This client allows you to subscribe to a Kafka topic and save all alerts to a directory.
 
-## Usage
+## Install
 
 ```bash
 pip install -r requirements.txt
 ```
 
+## Configure
+
 Contact cstubens@noao.edu for credentials.
 
 In `antares_client.py`, set `ANTARES_KAFKA_API_KEY` and `ANTARES_KAFKA_API_SECRET` accordingly.
+
+## Subscribe to a stream
 
 Subscribe to stream `test` and store all alerts in directory `out/`:
 
