@@ -43,4 +43,4 @@ Each connection to Kafka declares membership to a Consumer Group. Kafka keeps tr
 
 ## Process alerts
 
-If you want to run your own code on alerts in real-time, implement `process_alert(alert)` in `antares_client.py`. Each alert will be a Python dict/list datastructure of the same schema as the output json files. Inspect the json files in `example_data/` for examples.
+If you want to run your own code on alerts in real-time, add your code to the empty function `process_alert(alert)` in `antares_client.py`. Each alert will be a Python dict/list datastructure of the same schema as the output json files. Inspect the json files in `example_data/` for examples.
