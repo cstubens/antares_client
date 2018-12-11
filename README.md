@@ -30,3 +30,7 @@ Subscribe to stream `test` and save all alerts to directory `./out/`:
 ```bash
 python antares_client.py test --verbose --output_dir out
 ```
+
+## Process alerts
+
+If you want to run your own code on alerts in real-time, implement `process_alert(alert)` in `antares_client.py`. Each alert will be a Python dict/list datastructure of the same schema as the output json files. Inspect the json files in `example_data/` for examples.
