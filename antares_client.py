@@ -18,8 +18,8 @@ import bson
 # Kafka connection defaults.
 ANTARES_KAFKA_HOST = 'pkc-epgnk.us-central1.gcp.confluent.cloud'
 ANTARES_KAFKA_PORT = 9092
-ANTARES_KAFKA_API_KEY = None  # Set this value to your API Key
-ANTARES_KAFKA_API_SECRET = None  # Set this value to your API Secret
+ANTARES_KAFKA_API_KEY = ''  # Set this value to your API Key
+ANTARES_KAFKA_API_SECRET = ''  # Set this value to your API Secret
 
 
 log = logging.Logger('antares_client')
@@ -47,12 +47,21 @@ def main():
                     continue
 
                 topic = msg.topic()
-                alert = parse_antares_alert(msg.value())
                 log.debug('Received alert on topic "{}"'.format(topic))
+                alert = parse_antares_alert(msg.value())
+                process_alert(alert)
                 if args.output_dir:
                     save_alert(alert, args.output_dir, topic)
     finally:
         consumer.close()
+
+
+def process_alert(alert):
+    """
+    If you need to process Alerts as soon as they arrive,
+    put your code here.
+    """
+    pass
 
 
 def load_args():
@@ -82,12 +91,12 @@ def load_args():
     if args.verbose:
         log.setLevel('DEBUG')
 
-    required = [('api_key', '--api_key', 'ANTARES_KAFKA_API_KEY'),
-                ('api_secret', '--api_secret', 'ANTARES_KAFKA_API_SECRET')]
-    for arg, flag, var in required:
+    required = [('api_key', 'ANTARES_KAFKA_API_KEY'),
+                ('api_secret', 'ANTARES_KAFKA_API_SECRET')]
+    for arg, var in required:
         if not getattr(args, arg):
-            log.error('You must provide {} or set {} in {}.'
-                      .format(flag, var, __file__))
+            log.error('You must provide --{}, or else set {} in {}.'
+                      .format(arg, var, __file__))
             sys.exit(1)
 
     return args
