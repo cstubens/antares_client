@@ -12,6 +12,7 @@ import zlib
 import json
 
 import confluent_kafka
+from confluent_kafka.cimpl import KafkaError
 import bson
 
 
@@ -39,7 +40,7 @@ def main():
             msgs = consumer.consume(num_messages=10, timeout=1)
             for msg in msgs:
                 if msg.error():
-                    if '_PARTITION_EOF' in str(msg.error()):
+                    if msg.error().code() == KafkaError._PARTITION_EOF:
                         log.info('End of stream {}-{}. Waiting...'
                                  .format(msg.topic(), msg.partition()))
                     else:
