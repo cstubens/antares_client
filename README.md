@@ -11,6 +11,12 @@ ANTARES uses Apache Kafka to stream out alerts. This client allows you to subscr
 pip install -r requirements.txt
 ```
 
+Print help:
+
+```bash
+python antares_client.py -h
+```
+
 ## Configure
 
 Contact cstubens@noao.edu for credentials.
