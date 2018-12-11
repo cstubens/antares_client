@@ -28,8 +28,18 @@ In `antares_client.py`, set `ANTARES_KAFKA_API_KEY` and `ANTARES_KAFKA_API_SECRE
 Subscribe to stream `test` and save all alerts to directory `./out/`:
 
 ```bash
-python antares_client.py test --verbose --output_dir out
+python antares_client.py test --output_dir out --verbose
 ```
+
+You can also subscribe to multiple topics:
+
+```bash
+python antares_client.py topic1,topic2,topic3 --output_dir out
+```
+
+### A note about Consumer Groups
+
+Each connection to Kafka declares membership to a Consumer Group. Kafka keeps track of each group's position (cursor) in each topic, and will not deliver the same message more than once. Therefore, if you stop the script and restart it, it will pick up where it left off.
 
 ## Process alerts
 
