@@ -35,25 +35,21 @@ def main():
 
     # Process Alerts
     consumer = get_kafka_consumer(args)
-    log.info('Connecting...')
     try:
         while True:
             msgs = consumer.consume(num_messages=10, timeout=1)
             for msg in msgs:
                 if msg.error():
                     if '_PARTITION_EOF' in str(msg.error()):
-                        log.info('Reached end of stream.')
+                        log.info('End of stream. Waiting for messages...')
                     else:
                         log.error(msg.error())
                     continue
 
                 topic = msg.topic()
                 alert = parse_antares_alert(msg.value())
-                log.info('Received alert')
-                log.debug(json.dumps(alert, indent=4))
+                log.debug('Received alert on topic "{}"'.format(topic))
                 if args.output_dir:
-                    save_alert(alert, args.output_dir)
-
                     save_alert(alert, args.output_dir, topic)
     finally:
         consumer.close()
