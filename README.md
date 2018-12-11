@@ -25,9 +25,8 @@ In `antares_client.py`, set `ANTARES_KAFKA_API_KEY` and `ANTARES_KAFKA_API_SECRE
 
 ## Subscribe to a stream
 
-Subscribe to stream `test` and store all alerts in directory `out/`:
+Subscribe to stream `test` and save all alerts to directory `./out/`:
 
 ```bash
-mkdir out
-python antares_client.py test --verbose --output_dir out/
+python antares_client.py test --verbose --output_dir out
 ```
