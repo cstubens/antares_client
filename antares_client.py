@@ -30,24 +30,24 @@ log.setLevel('INFO')
 def main():
     # Load parameters
     args = load_args()
-    log.info('Starting up with config:')
-    log.info(args.__dict__)
 
     # Process Alerts
     consumer = get_kafka_consumer(args)
+    log.info('Connecting...')
     try:
         while True:
             msgs = consumer.consume(num_messages=10, timeout=1)
             for msg in msgs:
                 if msg.error():
                     if '_PARTITION_EOF' in str(msg.error()):
-                        log.info('End of stream. Waiting for messages...')
+                        log.info('End of stream {}-{}. Waiting...'
+                                 .format(msg.topic(), msg.partition()))
                     else:
                         log.error(msg.error())
                     continue
 
                 topic = msg.topic()
-                log.debug('Received alert on topic "{}"'.format(topic))
+                log.debug('Received alert on topic \'{}\''.format(topic))
                 alert = parse_antares_alert(msg.value())
                 process_alert(alert)
                 if args.output_dir:
