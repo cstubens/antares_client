@@ -140,7 +140,7 @@ def save_alert(alert, directory, topic):
     # Make output directory
     directory = os.path.join(directory, topic)
     if not os.path.exists(directory):
-        os.mkdirs(directory)
+        os.makedirs(directory)
 
     # Write alert to file
     alert_id = alert['new_alert']['alert_id']
