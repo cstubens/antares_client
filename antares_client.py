@@ -47,12 +47,14 @@ def main():
                         log.error(msg.error())
                     continue
 
+                topic = msg.topic()
                 alert = parse_antares_alert(msg.value())
                 log.info('Received alert')
                 log.debug(json.dumps(alert, indent=4))
                 if args.output_dir:
                     save_alert(alert, args.output_dir)
 
+                    save_alert(alert, args.output_dir, topic)
     finally:
         consumer.close()
 
@@ -134,13 +136,21 @@ def parse_antares_alert(payload):
         log.error(payload)
         raise
 
-def save_alert(alert, directory):
+
+def save_alert(alert, directory, topic):
     """
     Save an Alert as a JSON file.
     """
+    # Make output directory
+    directory = os.path.join(directory, topic)
+    if not os.path.exists(directory):
+        os.mkdirs(directory)
+
+    # Write alert to file
     alert_id = alert['new_alert']['alert_id']
     file_name = '{}.json'.format(alert_id)
-    file_path = os.path.join(directory, file_name) 
+    file_path = os.path.join(directory, file_name)
+    log.debug('Writing file {}'.format(file_path))
     with open(file_path, 'w') as f:
         json.dump(alert, f, indent=4)
 
