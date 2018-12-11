@@ -1,7 +1,7 @@
 # antares_client
-A light-weight client for receiving alerts from [ANTARES](antares.noao.edu).
+A light-weight client for receiving alerts from [ANTARES](http://antares.noao.edu).
 
-ANTARES is an Alert Broker developed by the [NOAO](noao.edu) for ZTF and LSST.
+ANTARES is an Alert Broker developed by the [NOAO](http://noao.edu) for ZTF and LSST.
 
 ANTARES uses Apache Kafka to stream out alerts. This client allows you to subscribe to a Kafka topic and save all alerts to a directory.
 
