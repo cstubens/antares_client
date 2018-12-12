@@ -126,6 +126,7 @@ def get_kafka_consumer(args):
     if not cert_path:
         for p in common_cert_locations:
             if os.path.exists(p):
+                log.info('Using CA certs at {}'.format(p))
                 cert_path = p
 
     kafka_config = {
