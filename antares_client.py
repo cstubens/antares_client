@@ -5,6 +5,7 @@ from __future__ import print_function
 
 import os
 import sys
+import datetime
 import logging
 import socket
 import argparse
@@ -48,12 +49,14 @@ def main():
                     continue
 
                 topic = msg.topic()
-                log.debug('Received alert on topic \'{}\''.format(topic))
                 alert = parse_antares_alert(msg.value())
                 process_alert(alert)
                 if args.output_dir:
-                    file_name = save_alert(alert, args.output_dir, topic)
-                    log.info('Saved alert {}'.format(file_name))
+                    file_path = save_alert(alert, args.output_dir, topic)
+                    t = datetime.datetime.now().strftime('%H:%M:%S')
+                    log.info('{} Saved alert {}'.format(t, file_path))
+                else:
+                    log.debug('Received alert on topic \'{}\''.format(topic))
     finally:
         consumer.close()
 
@@ -82,12 +85,12 @@ def load_args():
                         help='ANTARES Kafka API Key.')
     parser.add_argument('--api_secret', type=str, default=ANTARES_KAFKA_API_SECRET,
                         help='ANTARES Kafka API Secret.')
-    parser.add_argument('--group', type=str, default=socket.gethostname(),
+    parser.add_argument('-g', '--group', type=str, default=socket.gethostname(),
                         help='Globally unique name of consumer group.'
                              ' Defaults to your hostname.')
-    parser.add_argument('--output_dir', type=str,
+    parser.add_argument('-d', '--output_dir', type=str,
                         help='Directory to save Alerts in.')
-    parser.add_argument('--verbose', action='store_true')
+    parser.add_argument('-v', '--verbose', action='store_true')
     args = parser.parse_args()
     if args.verbose:
         log.setLevel('DEBUG')
