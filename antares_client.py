@@ -1,5 +1,6 @@
 """
 Connect to ANTARES' Kafka cluster and read messages.
+
 """
 from __future__ import print_function
 
@@ -18,10 +19,11 @@ import bson
 
 
 # Kafka connection defaults.
-ANTARES_KAFKA_HOST = 'pkc-epgnk.us-central1.gcp.confluent.cloud'
-ANTARES_KAFKA_PORT = 9092
-ANTARES_KAFKA_API_KEY = ''  # Set this value to your API Key
-ANTARES_KAFKA_API_SECRET = ''  # Set this value to your API Secret
+KAFKA_HOST = 'pkc-epgnk.us-central1.gcp.confluent.cloud'
+KAFKA_PORT = 9092
+KAFKA_API_KEY = ''
+KAFKA_API_SECRET = ''
+SSL_CA_LOCATION = ''
 
 
 log = logging.Logger('antares_client')
@@ -77,14 +79,16 @@ def load_args():
                         help='Name of Kafka topic to connect to.'
                              ' You may supply multiple topic names'
                              ' separated by commas, without spaces.')
-    parser.add_argument('--host', type=str, default=ANTARES_KAFKA_HOST,
+    parser.add_argument('--host', type=str, default=KAFKA_HOST,
                         help='Hostname of Kafka cluster.')
-    parser.add_argument('--port', type=int, default=ANTARES_KAFKA_PORT,
+    parser.add_argument('--port', type=int, default=KAFKA_PORT,
                         help='Port of Kafka cluster.')
-    parser.add_argument('--api_key', type=str, default=ANTARES_KAFKA_API_KEY,
+    parser.add_argument('--api_key', type=str, default=KAFKA_API_KEY,
                         help='ANTARES Kafka API Key.')
-    parser.add_argument('--api_secret', type=str, default=ANTARES_KAFKA_API_SECRET,
+    parser.add_argument('--api_secret', type=str, default=KAFKA_API_SECRET,
                         help='ANTARES Kafka API Secret.')
+    parser.add_argument('--ssl_ca_location', type=str, default=SSL_CA_LOCATION,
+                        help='Location of your ssl root CAs cert.pem file.')
     parser.add_argument('-g', '--group', type=str, default=socket.gethostname(),
                         help='Globally unique name of consumer group.'
                              ' Defaults to your hostname.')
@@ -95,8 +99,8 @@ def load_args():
     if args.verbose:
         log.setLevel('DEBUG')
 
-    required = [('api_key', 'ANTARES_KAFKA_API_KEY'),
-                ('api_secret', 'ANTARES_KAFKA_API_SECRET')]
+    required = [('api_key', 'KAFKA_API_KEY'),
+                ('api_secret', 'KAFKA_API_SECRET')]
     for arg, var in required:
         if not getattr(args, arg):
             log.error('You must provide --{}, or else set {} in {}.'
@@ -110,6 +114,20 @@ def get_kafka_consumer(args):
     """
     Open a Kafka Consumer and subscribe to topic.
     """
+    common_cert_locations = [
+        '/usr/local/etc/openssl/cert.pem',
+        '/opt/local/etc/openssl/cert.pem',
+        '/etc/pki/tls/cert.pem',
+        '/etc/ssl/certs/ca-certificates.crt',
+    ]
+
+    # Attempt to determine location of certs file
+    cert_path = args.ssl_ca_file
+    if not cert_path:
+        for p in common_cert_locations:
+            if os.path.exists(p):
+                cert_path = p
+
     kafka_config = {
         'bootstrap.servers': '{}:{}'.format(args.host, args.port),
         'sasl.username': args.api_key,
@@ -123,6 +141,9 @@ def get_kafka_consumer(args):
         'sasl.mechanisms': 'PLAIN',
         'security.protocol': 'SASL_SSL',
     }
+    if cert_path:
+        kafka_config['ssl.ca.location'] = cert_path
+
     consumer = confluent_kafka.Consumer(**kafka_config)
     topic = args.topic
     if ',' in topic:
