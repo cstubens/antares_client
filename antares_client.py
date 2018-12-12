@@ -41,8 +41,8 @@ def main():
             for msg in msgs:
                 if msg.error():
                     if msg.error().code() == KafkaError._PARTITION_EOF:
-                        log.info('End of stream {}-{}. Waiting...'
-                                 .format(msg.topic(), msg.partition()))
+                        log.debug('End of stream {}-{}. Waiting...'
+                                  .format(msg.topic(), msg.partition()))
                     else:
                         log.error(msg.error())
                     continue
@@ -52,15 +52,15 @@ def main():
                 alert = parse_antares_alert(msg.value())
                 process_alert(alert)
                 if args.output_dir:
-                    save_alert(alert, args.output_dir, topic)
+                    file_name = save_alert(alert, args.output_dir, topic)
+                    log.info('Saved alert {}'.format(file_name))
     finally:
         consumer.close()
 
 
 def process_alert(alert):
     """
-    If you need to process Alerts as soon as they arrive,
-    put your code here.
+    If you want to process Alerts as soon as they arrive, put your code here.
     """
     pass
 
@@ -150,6 +150,8 @@ def parse_antares_alert(payload):
 def save_alert(alert, directory, topic):
     """
     Save an Alert as a JSON file.
+
+    Return path of the new file.
     """
     # Make output directory
     directory = os.path.join(directory, topic)
@@ -160,9 +162,10 @@ def save_alert(alert, directory, topic):
     alert_id = alert['new_alert']['alert_id']
     file_name = '{}.json'.format(alert_id)
     file_path = os.path.join(directory, file_name)
-    log.debug('Writing file {}'.format(file_path))
     with open(file_path, 'w') as f:
         json.dump(alert, f, indent=4)
+
+    return file_path
 
 
 if __name__ == '__main__':
