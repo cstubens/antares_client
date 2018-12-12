@@ -55,6 +55,12 @@ The confluent_kafka library needs to verify the certificate of the server. If it
 
 To fix this, first locate your root CA certificates file, which is usually called `certs.pem` or `ca-certificates.crt`.
 
+The following command will tell you where `openssl` is configured to look for certificates. Look in that directory for your cert file.
+
+```bash
+openssl version -d
+```
+
 If you are using anaconda or miniconda, it may be something like `.../miniconda/ssl/cert.pem`.
 
 Once you have located the file, place its full path in variable `SSL_CA_LOCATION` near the top of `antares_client.py`. You may also specify it on the command line with `--ssl_ca_location /path/to/cert/file`.
