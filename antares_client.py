@@ -109,12 +109,16 @@ def get_kafka_consumer(args):
     """
     kafka_config = {
         'bootstrap.servers': '{}:{}'.format(args.host, args.port),
-        'default.topic.config': {'auto.offset.reset': 'smallest'},
-        'group.id': args.group,
-        'sasl.mechanisms': 'PLAIN',
-        'security.protocol': 'SASL_SSL',
         'sasl.username': args.api_key,
         'sasl.password': args.api_secret,
+        'group.id': args.group,
+
+        'default.topic.config': {'auto.offset.reset': 'smallest'},
+        'api.version.request': True,
+        'broker.version.fallback': '0.10.0.0',
+        'api.version.fallback.ms': 0,
+        'sasl.mechanisms': 'PLAIN',
+        'security.protocol': 'SASL_SSL',
     }
     consumer = confluent_kafka.Consumer(**kafka_config)
     topic = args.topic
