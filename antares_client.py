@@ -122,7 +122,7 @@ def get_kafka_consumer(args):
     ]
 
     # Attempt to determine location of certs file
-    cert_path = args.ssl_ca_file
+    cert_path = args.ssl_ca_location
     if not cert_path:
         for p in common_cert_locations:
             if os.path.exists(p):
