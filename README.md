@@ -7,6 +7,8 @@ ANTARES uses Apache Kafka to stream out alerts. This client allows you to subscr
 
 ## Install
 
+Python version 3.7 is reccomended. Older Python versions may work but are not tested.
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -31,7 +33,7 @@ Subscribe to stream `test` and save all alerts to directory `./out/`:
 python antares_client.py test --output_dir out --verbose
 ```
 
-If you get a Kafka error about _`Failed to verify broker certificate: unable to get local issuer certificate`_, see section [Troubleshooting](#Troubleshooting) below.
+If you get an error _`Failed to locate openssl certs file`_, see section [Troubleshooting](#Troubleshooting) below.
 
 You can also subscribe to multiple topics:
 
@@ -49,9 +51,9 @@ If you want to run your own code on alerts in real-time, add your code to the em
 
 ## Troubleshooting
 
-### "Failed to verify broker certificate"
+### "Failed to locate openssl certs file"
 
-The confluent_kafka library needs to verify the certificate of the server. If it fails to find your local root certificate authority certificates, it will print an error like: _`Failed to verify broker certificate: unable to get local issuer certificate`_.
+The confluent_kafka library needs to verify the certificate of the server. If it fails to find your local root certificate authority certificates, an error _`Failed to locate openssl certs file`_ will be printed.
 
 To fix this, first locate your root CA certificates file, which is usually called `certs.pem` or `ca-certificates.crt`.
 

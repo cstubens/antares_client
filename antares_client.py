@@ -12,6 +12,7 @@ import socket
 import argparse
 import zlib
 import json
+import subprocess
 
 import confluent_kafka
 from confluent_kafka.cimpl import KafkaError
@@ -37,14 +38,14 @@ def main():
 
     # Process Alerts
     consumer = get_kafka_consumer(args)
-    log.info('Connecting...')
+    log.info('Connecting to Kafka...')
     try:
         while True:
             msgs = consumer.consume(num_messages=10, timeout=1)
             for msg in msgs:
                 if msg.error():
                     if msg.error().code() == KafkaError._PARTITION_EOF:
-                        log.debug('End of stream {}-{}. Waiting...'
+                        log.debug('End of topic partition {}-{}. Waiting...'
                                   .format(msg.topic(), msg.partition()))
                     else:
                         log.error(msg.error())
@@ -114,20 +115,9 @@ def get_kafka_consumer(args):
     """
     Open a Kafka Consumer and subscribe to topic.
     """
-    common_cert_locations = [
-        '/usr/local/etc/openssl/cert.pem',
-        '/opt/local/etc/openssl/cert.pem',
-        '/etc/pki/tls/cert.pem',
-        '/etc/ssl/certs/ca-certificates.crt',
-    ]
-
-    # Attempt to determine location of certs file
     cert_path = args.ssl_ca_location
     if not cert_path:
-        for p in common_cert_locations:
-            if os.path.exists(p):
-                log.info('Using CA certs at {}'.format(p))
-                cert_path = p
+        cert_path = locate_certs_file()
 
     kafka_config = {
         'bootstrap.servers': '{}:{}'.format(args.host, args.port),
@@ -191,6 +181,54 @@ def save_alert(alert, directory, topic):
         json.dump(alert, f, indent=4)
 
     return file_path
+
+
+def locate_certs_file():
+    """
+    Attempt to locate openssl's CA certs file.
+    """
+    known_cert_locations = [
+        '/opt/local/etc/openssl/cert.pem',
+        '/usr/local/etc/openssl/cert.pem',
+        '/etc/pki/tls/cert.pem',
+        '/etc/ssl/certs/ca-certificates.crt',
+    ]
+
+    log.info('Looking for openssl certs file.')
+    for p in known_cert_locations:
+        log.info('Checking location {}'.format(p))
+        if os.path.exists(p):
+            log.info('Found certs at {}'.format(p))
+            log.info('')
+            return p
+    log.info('Didn\'t find certs file in known locations.')
+    log.info('')
+    log.info('Attempting to locate certs using'
+             ' `openssl version -d`')
+    code, stdout, stderr = call('openssl version -d')
+    if code:
+        log.info('Got error code {}'.format(code))
+        log.error('Failed to locate openssl certs file.')
+        sys.exit(1)
+    d = stdout.decode().strip().partition(': ')[2].strip('"')
+    p = os.path.join(d, 'cert.pem')
+    if os.path.exists(p):
+        log.info('Found certs at {}'.format(p))
+        log.info('')
+        return p
+
+
+def call(cmd):
+    """
+    Execute a shell command and return the return code, stout, stderr.
+    """
+    proc = subprocess.Popen(cmd,
+                            shell=True,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    return_code = proc.returncode
+    return return_code, stdout, stderr
 
 
 if __name__ == '__main__':
