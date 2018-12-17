@@ -9,11 +9,13 @@ ANTARES uses Apache Kafka to stream out alerts. This client allows you to subscr
 
 Python version 3.7 is reccomended. Older Python versions may work but are not tested.
 
+With your Python environment set up, install the dependencies for `antares_client`:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-Print help:
+If it worked, you will now be able to view the help:
 
 ```bash
 python antares_client.py -h
