@@ -41,6 +41,12 @@ You can also subscribe to multiple topics:
 python antares_client.py topic1,topic2,topic3 --output_dir out
 ```
 
+Note: The client will automatically reconnect to Kafka if it looses the connection. It is common for this to happen periodically. If it occurs, the client wil continue to operate normally but you will see messages like:
+
+```
+%3|1544735845.925|FAIL|rdkafka#consumer-1| [thrd:sasl_ssl://b0-pkc-epgnk.us-central1.gcp.confluent.cloud:9092/0]: sasl_ssl://b0-pkc-epgnk.us-central1.gcp.confluent.cloud:9092/0: Disconnected (after 600053ms in state UP)
+```
+
 ### A note about Consumer Groups
 
 Each connection to Kafka declares membership to a Consumer Group. Kafka keeps track of each group's position (cursor) in each topic, and will not deliver the same message more than once. Therefore, if you stop the script and restart it, it will pick up where it left off.
