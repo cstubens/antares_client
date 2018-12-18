@@ -17,7 +17,7 @@ cd antares_client
 pip install -r requirements.txt
 ```
 
-If it worked, you will now be able to view the help:
+If all went well, you will now be able to view the help:
 
 ```bash
 python antares_client.py -h
