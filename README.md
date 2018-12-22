@@ -25,9 +25,9 @@ python antares_client.py -h
 
 ## Configure
 
-Contact the ANTARES team to request API credentials.
+Contact the ANTARES team to request API credentials. You will recieve a pair of credentials: your API Key and API Secret. Do not share these credentials with others. You are permitted one active consumer per set of credentials. The NOAO reserves the right to monitor your usage and revoke your credentials at any time.
 
-In `antares_client.py`, set `ANTARES_KAFKA_API_KEY` and `ANTARES_KAFKA_API_SECRET` accordingly. If you prefer, you may specify these at runtime using `--api_key` and `--api_secret`.
+Once you have your credentials, set `ANTARES_KAFKA_API_KEY` and `ANTARES_KAFKA_API_SECRET` in `antares_client.py` accordingly. If you prefer, you may specify these at runtime using `--api_key` and `--api_secret`.
 
 ## Subscribe to a stream
 
