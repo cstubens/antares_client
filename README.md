@@ -31,10 +31,10 @@ Once you have your credentials, set `ANTARES_KAFKA_API_KEY` and `ANTARES_KAFKA_A
 
 ## Subscribe to a stream
 
-Subscribe to stream `test` and save all alerts to directory `./out/`:
+Subscribe to stream `extragalactic` and save all alerts to directory `./out/`:
 
 ```bash
-python antares_client.py test --output_dir out --verbose
+python antares_client.py extragalactic --output_dir out --verbose
 ```
 
 If you get an error _`Failed to locate openssl certs file`_, see section [Troubleshooting](#Troubleshooting) below.
