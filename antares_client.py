@@ -174,7 +174,12 @@ def save_alert(alert, directory, topic):
         os.makedirs(directory)
 
     # Write alert to file
-    alert_id = alert['new_alert']['alert_id']
+    alert_id = alert['new_alert'].get('alert_id', None)
+    if alert_id is None:
+        alert_id = '{}-{}'.format(
+            alert['new_alert']['survey'],
+            alert['new_alert']['original_id'])
+
     file_name = '{}.json'.format(alert_id)
     file_path = os.path.join(directory, file_name)
     with open(file_path, 'w') as f:
